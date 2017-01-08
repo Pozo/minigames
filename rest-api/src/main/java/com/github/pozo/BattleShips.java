@@ -1,4 +1,4 @@
-package pozo;
+package com.github.pozo;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.GET;

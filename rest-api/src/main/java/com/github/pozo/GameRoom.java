@@ -1,4 +1,4 @@
-package pozo;
+package com.github.pozo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ApplicationPath;
