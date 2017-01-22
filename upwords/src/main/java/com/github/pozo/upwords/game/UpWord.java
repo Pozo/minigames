@@ -17,15 +17,14 @@ import java.util.Random;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class UpWord implements PlayerListener {
-    private static final int MAX_CHARACTER_NUMBER = 7;
-
     private final Map<Character, Integer> possibleCharacters;
-    private final Map<Player, List<Character>> gameState;
+    private final Map<Player, List<String>> gameState;
 
     private final Player playerOne;
     private final Player playerTwo;
 
     private final Board upwordBoard;
+    private final CharacterMixer characterMixer;
     private final GameEventProducer gameEventProducer;
 
     private Player firstPlayer;
@@ -38,6 +37,7 @@ public class UpWord implements PlayerListener {
     public UpWord(DefaultPlayer playerOne, DefaultPlayer playerTwo) {
         checkParams(playerOne, playerTwo);
         upwordBoard = new UpWordsBoard();
+        characterMixer = new CharacterMixer();
         gameState = new HashMap<>();
         possibleCharacters = new HashMap<>();
         previousSteps = new ArrayList<>();
@@ -64,8 +64,8 @@ public class UpWord implements PlayerListener {
     public void start() {
         firstPlayer = raffleFirstPlayer();
 
-        List<Character> initialCharactersOne = raffleCharactersFor(playerOne, MAX_CHARACTER_NUMBER);
-        List<Character> initialCharactersTwo = raffleCharactersFor(playerTwo, MAX_CHARACTER_NUMBER);
+        List<String> initialCharactersOne = characterMixer.raffleCharacters();
+        List<String> initialCharactersTwo = characterMixer.raffleCharacters();
 
         gameState.put(playerOne, initialCharactersOne);
         gameState.put(playerTwo, initialCharactersTwo);
@@ -78,13 +78,6 @@ public class UpWord implements PlayerListener {
         for (GameEventListener gameEventListener : gameEventListeners) {
             gameEventListener.gameStarted(firstPlayer);
         }
-    }
-
-    private List<Character> raffleCharactersFor(Player player, int characterNumber) {
-
-        final ArrayList<Character> ruffledCharacters = new ArrayList<>('ő');
-        ruffledCharacters.add('ő');
-        return ruffledCharacters;
     }
 
     public boolean hasWinner() {
