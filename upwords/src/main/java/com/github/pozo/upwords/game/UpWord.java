@@ -17,7 +17,6 @@ import java.util.Random;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class UpWord implements PlayerListener {
-    private final Map<Character, Integer> possibleCharacters;
     private final Map<Player, List<String>> gameState;
 
     private final Player playerOne;
@@ -28,6 +27,7 @@ public class UpWord implements PlayerListener {
     private final GameEventProducer gameEventProducer;
 
     private Player firstPlayer;
+    private Player currentPlayer;
     private Player previousPlayer;
     private List<Step> previousSteps;
 
@@ -39,7 +39,7 @@ public class UpWord implements PlayerListener {
         upwordBoard = new UpWordsBoard();
         characterMixer = new CharacterMixer();
         gameState = new HashMap<>();
-        possibleCharacters = new HashMap<>();
+
         previousSteps = new ArrayList<>();
         gameEventListeners = new LinkedBlockingDeque<>();
 
@@ -63,6 +63,7 @@ public class UpWord implements PlayerListener {
 
     public void start() {
         firstPlayer = raffleFirstPlayer();
+        currentPlayer = firstPlayer;
 
         List<String> initialCharactersOne = characterMixer.raffleCharacters();
         List<String> initialCharactersTwo = characterMixer.raffleCharacters();
@@ -84,15 +85,39 @@ public class UpWord implements PlayerListener {
         return hasWinner;
     }
 
+    public Player getCurrentPlayer() {
+        return this.currentPlayer;
+    }
+
     public void iterate() {
         final List<Step> VERY_FIRST_TURN = null;
+        final boolean firstTurn = previousPlayer == VERY_FIRST_TURN;
 
-        if (previousPlayer == null) {
-            firstPlayer.yourTurn(VERY_FIRST_TURN);
+        finishTurn(this.currentPlayer);
+
+        setupPreviousPlayer();
+        setupCurrentPlayer(firstTurn);
+    }
+
+    private void setupCurrentPlayer(boolean firstTurn) {
+        if (firstTurn) {
+            if (currentPlayer.equals(playerOne)) {
+                this.currentPlayer = playerTwo;
+            } else {
+                this.currentPlayer = playerOne;
+            }
+
+        } else if (previousPlayer.equals(playerOne)) {
+            this.currentPlayer = playerTwo;
+
+        } else if (previousPlayer.equals(playerTwo)) {
+            this.currentPlayer = playerOne;
+
         }
+    }
 
-        gameEventProducer.fireNextPlayerEvent(previousPlayer, previousSteps);
-        previousSteps.clear();
+    private void setupPreviousPlayer() {
+        this.previousPlayer = currentPlayer;
     }
 
     private Player raffleFirstPlayer() {
@@ -108,8 +133,8 @@ public class UpWord implements PlayerListener {
 
     @Override
     public void put(Player player, Step step) throws IllegalCoordinateException {
-        boolean isSamePlayer = previousPlayer != null && previousPlayer.equals(player);
-        boolean firstPlayerRequiredButNotGet = previousPlayer == null && !firstPlayer.equals(player);
+        boolean isSamePlayer = previousPlayer != null && currentPlayer.equals(player);
+        boolean firstPlayerRequiredButNotGet = currentPlayer == null && !firstPlayer.equals(player);
         if (isSamePlayer || firstPlayerRequiredButNotGet) {
             throw new IllegalArgumentException("This is not your turn!");
         }
@@ -125,13 +150,23 @@ public class UpWord implements PlayerListener {
 
     @Override
     public void finishTurn(Player player) {
-        this.previousPlayer = player;
-
         for (GameEventListener gameEventListener : gameEventListeners) {
-            if (previousPlayer.equals(playerOne)) {
-                gameEventListener.nextTurn(playerTwo);
+            if (player.equals(playerTwo)) {
+                if (player.equals(firstPlayer)) {
+                    // player is playerTwo and he is the FIRST player
+                    gameEventListener.secondPlayerTurn(playerOne);
+                } else {
+                    // player is playerTwo and he is the SECOND player
+                    gameEventListener.firstPlayerTurn(playerOne);
+                }
             } else {
-                gameEventListener.nextTurn(playerOne);
+                if (player.equals(firstPlayer)) {
+                    // player is playerOne and he is the FIRST player
+                    gameEventListener.secondPlayerTurn(playerTwo);
+                } else {
+                    // player is playerOne and he is the SECOND player
+                    gameEventListener.firstPlayerTurn(playerTwo);
+                }
             }
         }
     }

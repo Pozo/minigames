@@ -4,7 +4,7 @@ import com.github.pozo.upwords.game.UpWord;
 import com.github.pozo.upwords.player.DefaultPlayer;
 
 public class App {
-    public static void main(String[] args) throws IllegalCoordinateException {
+    public static void main(String[] args) throws IllegalCoordinateException, InterruptedException {
         final DefaultPlayer playerOne = new DefaultPlayer("Bela");
         final DefaultPlayer playerTwo = new DefaultPlayer("Otto");
 
@@ -13,7 +13,7 @@ public class App {
         upWord.addGameEventListener(new GameEventListener() {
             @Override
             public void gameStarted(final Player firstPlayer) {
-                System.out.println("App.gameStarted");
+                System.out.println("App.gameStarted: " + firstPlayer.getName());
                 try {
                     String character = firstPlayer.getCharacters().get(0);
                     Step step = new Step(new Coordinate(0, 0), character);
@@ -24,8 +24,27 @@ public class App {
             }
 
             @Override
-            public void nextTurn(Player player) {
-                System.out.println("App.nextTurn");
+            public void firstPlayerTurn(Player player) {
+                try {
+                    String character = player.getCharacters().get(0);
+                    Step step = new Step(new Coordinate(1, 1), character);
+                    player.put(step);
+                } catch (IllegalCoordinateException e) {
+                    System.out.println(e.getMessage());
+                }
+                System.out.println("App.firstPlayerTurn: " + player.getName());
+            }
+
+            @Override
+            public void secondPlayerTurn(Player player) {
+                try {
+                    String character = player.getCharacters().get(0);
+                    Step step = new Step(new Coordinate(1, 1), character);
+                    player.put(step);
+                } catch (IllegalCoordinateException e) {
+                    System.out.println(e.getMessage());
+                }
+                System.out.println("App.secondPlayerTurn: " + player.getName());
             }
 
             @Override
@@ -35,8 +54,9 @@ public class App {
         });
         upWord.start();
 
-//        while (!upWord.hasWinner()) {
-//            upWord.iterate();
-//        }
+        while (!upWord.hasWinner()) {
+            Thread.sleep(20);
+            upWord.iterate();
+        }
     }
 }

@@ -35,6 +35,11 @@ public class DefaultPlayer implements Player {
     }
 
     @Override
+    public void finishTurn() {
+        playerListener.finishTurn(this);
+    }
+
+    @Override
     public List<String> getCharacters() {
         return yourCharacters;
     }
