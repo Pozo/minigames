@@ -70,10 +70,10 @@ public class UpWord implements PlayerListener {
         gameState.put(playerOne, initialCharactersOne);
         gameState.put(playerTwo, initialCharactersTwo);
 
-        System.out.println("first player is " + firstPlayer);
-
         playerOne.gameStarted(new ArrayList<>(initialCharactersOne), 10, 10);
         playerTwo.gameStarted(new ArrayList<>(initialCharactersTwo), 10, 10);
+
+        System.out.println("first player is " + firstPlayer);
 
         for (GameEventListener gameEventListener : gameEventListeners) {
             gameEventListener.gameStarted(firstPlayer);

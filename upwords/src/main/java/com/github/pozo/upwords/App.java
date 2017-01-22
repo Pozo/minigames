@@ -15,7 +15,7 @@ public class App {
             public void gameStarted(final Player firstPlayer) {
                 System.out.println("App.gameStarted");
                 try {
-                    Character character = firstPlayer.getCharacters().get(0);
+                    String character = firstPlayer.getCharacters().get(0);
                     Step step = new Step(new Coordinate(0, 0), character);
                     firstPlayer.put(step);
                 } catch (IllegalCoordinateException e) {

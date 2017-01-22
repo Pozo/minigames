@@ -16,7 +16,7 @@ public class DefaultPlayer implements Player {
 
     private int boardHeight;
     private int boardWidth;
-    private List<Character> yourCharacters;
+    private List<String> yourCharacters;
 
     public DefaultPlayer(String name) {
         this.name = name;
@@ -35,12 +35,12 @@ public class DefaultPlayer implements Player {
     }
 
     @Override
-    public List<Character> getCharacters() {
+    public List<String> getCharacters() {
         return yourCharacters;
     }
 
     @Override
-    public void gameStarted(List<Character> yourCharacters, int boardHeight, int boardWidth) {
+    public void gameStarted(List<String> yourCharacters, int boardHeight, int boardWidth) {
         this.yourCharacters = yourCharacters;
 
     }
@@ -53,7 +53,7 @@ public class DefaultPlayer implements Player {
         boolean success = false;
         try {
             while (!success) {
-                final Character myFirstCharacter = yourCharacters.get(0);
+                final String myFirstCharacter = yourCharacters.get(0);
                 final Coordinate myFirstPosition = new Coordinate(0, 0);
 
                 final Step firstStep = new Step(myFirstPosition, myFirstCharacter);

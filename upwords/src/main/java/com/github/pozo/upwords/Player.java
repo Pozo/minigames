@@ -7,5 +7,5 @@ public interface Player extends GameListener {
 
     void put(Step step) throws IllegalCoordinateException;
 
-    List<Character> getCharacters();
+    List<String> getCharacters();
 }

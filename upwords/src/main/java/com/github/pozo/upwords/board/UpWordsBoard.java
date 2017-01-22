@@ -17,10 +17,10 @@ public class UpWordsBoard implements Board {
     private final int width;
     private final int height;
 
-    private final List<Character>[][] board;
+    private final List<String>[][] board;
 
     private Coordinate lastCoordinate;
-    private Character lastCharacter;
+    private String lastCharacter;
 
     public UpWordsBoard() {
         this(BOARD_WIDTH, BOARD_HEIGHT);
@@ -35,7 +35,7 @@ public class UpWordsBoard implements Board {
 
     public void put(Step step) throws IllegalCoordinateException {
         final Coordinate coordinate = step.getCoordinate();
-        final Character character = step.getCharacter();
+        final String character = step.getCharacter();
 
         int x = coordinate.getX();
         int y = coordinate.getY();
@@ -46,7 +46,7 @@ public class UpWordsBoard implements Board {
         if (x >= width || y >= height) {
             throw new IllegalCoordinateException("Coordinate cant be bigger than the boardsize");
         }
-        List<Character> characters = board[y][x];
+        List<String> characters = board[y][x];
         if (characters != null) {
             if (characters.size() == MAX_STACK_SIZE - 1) {
                 throw new IllegalCoordinateException("This coordinate is full!");
@@ -59,7 +59,7 @@ public class UpWordsBoard implements Board {
         }
     }
 
-    private void put(Coordinate coordinate, Character character) {
+    private void put(Coordinate coordinate, String character) {
         int x = coordinate.getX();
         int y = coordinate.getY();
 
@@ -95,8 +95,8 @@ public class UpWordsBoard implements Board {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (List<Character>[] rows : board) {
-            for (List<Character> column : rows) {
+        for (List<String>[] rows : board) {
+            for (List<String> column : rows) {
                 if (column == null) {
                     builder.append(" ");
                 } else {

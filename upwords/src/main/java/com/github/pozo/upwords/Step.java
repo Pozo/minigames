@@ -2,9 +2,9 @@ package com.github.pozo.upwords;
 
 public class Step {
     private final Coordinate coordinate;
-    private final Character character;
+    private final String character;
 
-    public Step(Coordinate coordinate, Character character) {
+    public Step(Coordinate coordinate, String character) {
         this.coordinate = coordinate;
         this.character = character;
     }
@@ -13,7 +13,7 @@ public class Step {
         return coordinate;
     }
 
-    public Character getCharacter() {
+    public String getCharacter() {
         return character;
     }
 
