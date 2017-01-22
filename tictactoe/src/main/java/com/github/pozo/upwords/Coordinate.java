@@ -1,4 +1,4 @@
-package com.github.pozo.tictactoe;
+package com.github.pozo.upwords;
 
 public class Coordinate {
     private int x;

@@ -1,6 +1,6 @@
-package com.github.pozo.tictactoe;
+package com.github.pozo.upwords;
 
-import com.github.pozo.tictactoe.board.Marks;
+import com.github.pozo.upwords.board.Marks;
 
 public interface Player extends GameListener {
     String getName();

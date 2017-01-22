@@ -1,4 +1,4 @@
-package com.github.pozo.tictactoe.board;
+package com.github.pozo.upwords.board;
 
 public enum Marks {
     CROSS, CIRCLE;

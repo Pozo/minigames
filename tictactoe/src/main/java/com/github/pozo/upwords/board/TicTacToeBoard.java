@@ -1,8 +1,8 @@
-package com.github.pozo.tictactoe.board;
+package com.github.pozo.upwords.board;
 
-import com.github.pozo.tictactoe.Board;
-import com.github.pozo.tictactoe.Coordinate;
-import com.github.pozo.tictactoe.IllegalCoordinateException;
+import com.github.pozo.upwords.Board;
+import com.github.pozo.upwords.Coordinate;
+import com.github.pozo.upwords.IllegalCoordinateException;
 
 import java.util.ArrayList;
 

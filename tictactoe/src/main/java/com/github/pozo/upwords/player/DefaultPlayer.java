@@ -1,10 +1,10 @@
-package com.github.pozo.tictactoe.player;
+package com.github.pozo.upwords.player;
 
-import com.github.pozo.tictactoe.Coordinate;
-import com.github.pozo.tictactoe.IllegalCoordinateException;
-import com.github.pozo.tictactoe.Player;
-import com.github.pozo.tictactoe.PlayerListener;
-import com.github.pozo.tictactoe.board.Marks;
+import com.github.pozo.upwords.Coordinate;
+import com.github.pozo.upwords.IllegalCoordinateException;
+import com.github.pozo.upwords.Player;
+import com.github.pozo.upwords.PlayerListener;
+import com.github.pozo.upwords.board.Marks;
 
 import java.util.ArrayList;
 import java.util.List;

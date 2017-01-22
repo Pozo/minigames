@@ -1,4 +1,4 @@
-package com.github.pozo.tictactoe;
+package com.github.pozo.upwords;
 
 public interface PlayerListener {
     void check(Player player, Coordinate coordinate) throws IllegalCoordinateException;

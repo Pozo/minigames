@@ -1,7 +1,7 @@
-package com.github.pozo.tictactoe;
+package com.github.pozo.upwords;
 
-import com.github.pozo.tictactoe.game.TicTacToe;
-import com.github.pozo.tictactoe.player.DefaultPlayer;
+import com.github.pozo.upwords.game.TicTacToe;
+import com.github.pozo.upwords.player.DefaultPlayer;
 
 public class App {
     public static void main(String[] args) {
