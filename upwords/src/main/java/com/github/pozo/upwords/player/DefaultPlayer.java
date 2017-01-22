@@ -5,6 +5,7 @@ import com.github.pozo.upwords.IllegalCoordinateException;
 import com.github.pozo.upwords.Player;
 import com.github.pozo.upwords.PlayerListener;
 import com.github.pozo.upwords.Step;
+import com.github.pozo.upwords.game.CharacterMixer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,24 @@ public class DefaultPlayer implements Player {
 
     @Override
     public void put(Step step) throws IllegalCoordinateException {
-        playerListener.put(this, step);
+        final String subjectCharacter = step.getCharacter();
+
+        if (yourCharacters.contains(subjectCharacter)) {
+            playerListener.put(this, step);
+            yourCharacters.remove(subjectCharacter);
+        } else {
+            throw new IllegalArgumentException("You dont have this character :" + subjectCharacter);
+        }
+    }
+
+    @Override
+    public void replace(String character) {
+        if (yourCharacters.contains(character)) {
+            playerListener.replace(this, character);
+            yourCharacters.remove(character);
+        } else {
+            throw new IllegalArgumentException("You dont have this character :" + character);
+        }
     }
 
     @Override
@@ -47,7 +65,16 @@ public class DefaultPlayer implements Player {
     @Override
     public void gameStarted(List<String> yourCharacters, int boardHeight, int boardWidth) {
         this.yourCharacters = yourCharacters;
+    }
 
+    @Override
+    public void drawnCharacters(List<String> newCharacters) {
+        int totalSize = this.yourCharacters.size() + newCharacters.size();
+
+        if (totalSize > CharacterMixer.MAX_CHARACTER_NUMBER) {
+            throw new IllegalArgumentException("You cant hold more than " + CharacterMixer.MAX_CHARACTER_NUMBER + " character");
+        }
+        this.yourCharacters.addAll(newCharacters);
     }
 
     @Override
@@ -74,12 +101,12 @@ public class DefaultPlayer implements Player {
 
     @Override
     public void youWin() {
-
+        // TODO implement
     }
 
     @Override
     public void youLoose() {
-
+        // TODO implement
     }
 
     public void addPlayerListener(PlayerListener playerListener) {

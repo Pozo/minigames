@@ -30,13 +30,13 @@ class GameEventProducer {
         System.out.println(gameTicTacToeBoard);
     }
 
-    void fireNextPlayerEvent(Player previousPlayer, List<Step> steps) {
-        if (previousPlayer.equals(playerOne)) {
-            playerTwo.yourTurn(steps);
-        } else {
-            playerOne.yourTurn(steps);
-        }
-    }
+//    void fireNextPlayerEvent(Player previousPlayer, List<Step> steps) {
+//        if (previousPlayer.equals(playerOne)) {
+//            playerTwo.yourTurn(steps);
+//        } else {
+//            playerOne.yourTurn(steps);
+//        }
+//    }
 
     public void fireGameEndEventWithAbandon(Player playerWhoGaveUp) {
         if (playerWhoGaveUp.equals(playerOne)) {

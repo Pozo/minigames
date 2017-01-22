@@ -90,16 +90,16 @@ public class UpWord implements PlayerListener {
     }
 
     public void iterate() {
-        final List<Step> VERY_FIRST_TURN = null;
-        final boolean firstTurn = previousPlayer == VERY_FIRST_TURN;
-
         finishTurn(this.currentPlayer);
 
         setupPreviousPlayer();
-        setupCurrentPlayer(firstTurn);
+        setupCurrentPlayer();
     }
 
-    private void setupCurrentPlayer(boolean firstTurn) {
+    private void setupCurrentPlayer() {
+        final List<Step> VERY_FIRST_TURN = null;
+        final boolean firstTurn = previousPlayer == VERY_FIRST_TURN;
+
         if (firstTurn) {
             if (currentPlayer.equals(playerOne)) {
                 this.currentPlayer = playerTwo;
@@ -135,17 +135,39 @@ public class UpWord implements PlayerListener {
     public void put(Player player, Step step) throws IllegalCoordinateException {
         boolean isSamePlayer = previousPlayer != null && currentPlayer.equals(player);
         boolean firstPlayerRequiredButNotGet = currentPlayer == null && !firstPlayer.equals(player);
+
         if (isSamePlayer || firstPlayerRequiredButNotGet) {
             throw new IllegalArgumentException("This is not your turn!");
         }
-        upwordBoard.put(step);
-        previousSteps.add(step);
+        final List<String> currentPlayerCharacters = gameState.get(player);
+        final String character = step.getCharacter();
+
+        if (currentPlayerCharacters.contains(character)) {
+            upwordBoard.put(step);
+            previousSteps.add(step);
+            currentPlayerCharacters.remove(character);
+        } else {
+            throw new IllegalArgumentException(player.getName() + " dont have this character:" + character);
+        }
     }
 
     @Override
     public void pass(Player playerWhoGaveUp) {
         gameEventProducer.fireGameEndEventWithAbandon(playerWhoGaveUp);
         hasWinner = true;
+    }
+
+    @Override
+    public void replace(Player player, String character) {
+        final List<String> playerCharacters = gameState.get(player);
+
+        if (playerCharacters.contains(character)) {
+            String newCharacter = characterMixer.replace(character);
+            playerCharacters.remove(character);
+            playerCharacters.add(newCharacter);
+        } else {
+            throw new IllegalArgumentException(player.getName() + " dont have this character:" + character);
+        }
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class CharacterMixer {
-    private static final int MAX_CHARACTER_NUMBER = 7;
+    public static final int MAX_CHARACTER_NUMBER = 7;
 
     private final Map<String, Integer> currentCharacters = new HashMap<String, Integer>() {
         {
@@ -56,7 +56,9 @@ public class CharacterMixer {
     public List<String> raffleCharacters() {
         return getCharacters(MAX_CHARACTER_NUMBER);
     }
-
+    String replace(String character) {
+        return "9";
+    }
     List<String> getCharacters(int numberOfCharacters) {
         if (numberOfCharacters < 1 || numberOfCharacters > MAX_CHARACTER_NUMBER) {
             throw new IllegalArgumentException("The number of the requested characters must be between 1 and " + MAX_CHARACTER_NUMBER);

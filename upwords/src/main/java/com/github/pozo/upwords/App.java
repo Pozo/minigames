@@ -55,7 +55,7 @@ public class App {
         upWord.start();
 
         while (!upWord.hasWinner()) {
-            Thread.sleep(20);
+            Thread.sleep(1000);
             upWord.iterate();
         }
     }
