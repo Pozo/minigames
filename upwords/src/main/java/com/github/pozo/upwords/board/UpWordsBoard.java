@@ -48,8 +48,8 @@ public class UpWordsBoard implements Board {
         }
         List<String> characters = board[y][x];
         if (characters != null) {
-            if (characters.size() == MAX_STACK_SIZE - 1) {
-                throw new IllegalCoordinateException("This coordinate is full!");
+            if (characters.size() >= MAX_STACK_SIZE) {
+                throw new IllegalCoordinateException(String.format("Cant put %s to %s! This coordinate is full!",step.getCharacter(),step.getCoordinate()));
             } else {
                 put(coordinate, character);
             }
