@@ -147,6 +147,7 @@ public class UpWord implements PlayerListener {
         final String character = step.getCharacter();
 
         if (currentPlayerCharacters.contains(character)) {
+            LOGGER.info(player.getName() + " puts " + character + " to " + step);
             upwordBoard.put(step);
             previousSteps.add(step);
             currentPlayerCharacters.remove(character);

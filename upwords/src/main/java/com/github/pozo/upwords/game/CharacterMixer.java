@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class CharacterMixer {
     public static final int MAX_CHARACTER_NUMBER = 7;
 
-    private final Map<String, Integer> currentCharacters = new HashMap<String, Integer>() {
+    private final Map<String, Integer> currentCharacters;
+
+    private static final Map<String, Integer> HUNGARIAN_CHARACTERS = new HashMap<String, Integer>() {
         {
             put("A", 6);
             put("Á", 4);
@@ -52,23 +53,51 @@ public class CharacterMixer {
             put("ZS", 1);
         }
     };
+    private final CharacterProvider characterProvider;
+
+    public CharacterMixer() {
+        this(HUNGARIAN_CHARACTERS, CharacterProvider.instance());
+    }
+
+    CharacterMixer(Map<String, Integer> characterSet, CharacterProvider characterProvider) {
+        this.currentCharacters = characterSet;
+        this.characterProvider = characterProvider;
+    }
 
     public List<String> raffleCharacters() {
         return getCharacters(MAX_CHARACTER_NUMBER);
     }
+
     String replace(String character) {
-        return "9";
+        final String randomCharacter = getOneCharacter();
+
+        int currentValue = currentCharacters.get(character);
+        currentCharacters.put(character, currentValue + 1);
+
+        return randomCharacter;
     }
-    List<String> getCharacters(int numberOfCharacters) {
-        if (numberOfCharacters < 1 || numberOfCharacters > MAX_CHARACTER_NUMBER) {
+
+    List<String> getCharacters(int numberOfRequestedCharacters) {
+        if (numberOfRequestedCharacters < 1 || numberOfRequestedCharacters > MAX_CHARACTER_NUMBER) {
             throw new IllegalArgumentException("The number of the requested characters must be between 1 and " + MAX_CHARACTER_NUMBER);
         }
-        boolean hasOnlyLessThanSevenCharacter = remainingCharacterNumber() < MAX_CHARACTER_NUMBER;
+        final int remainingCharacterNumber = remainingCharacterNumber();
+        //boolean hasOnlyLessThanSevenCharacter = remainingCharacterNumber < MAX_CHARACTER_NUMBER;
+        boolean hasOnlyLessThanRequestedCharacter = remainingCharacterNumber < numberOfRequestedCharacters;
 
-        if (hasOnlyLessThanSevenCharacter) {
+        if (hasOnlyLessThanRequestedCharacter) {
             return remainingCharactersAsList();
         } else {
-            return ruffleCharacters(numberOfCharacters);
+            return ruffleCharacters(numberOfRequestedCharacters);
+        }
+    }
+
+    private String getOneCharacter() {
+        List<String> character = getCharacters(1);
+        if (character.size() == 1) {
+            return character.get(0);
+        } else {
+            throw new IllegalArgumentException("There is not enough characters!");
         }
     }
 
@@ -77,7 +106,7 @@ public class CharacterMixer {
 
         for (int i = 0; i < numberOfCharacters; i++) {
             final Map<String, Integer> remainingCharacters = remainingCharacters();
-            final String randomCharacter = getRandomCharacterFrom(remainingCharacters);
+            final String randomCharacter = characterProvider.getRandomCharacterFrom(remainingCharacters);
 
             ruffledCharacters.add(randomCharacter);
 
@@ -86,16 +115,6 @@ public class CharacterMixer {
         }
 
         return ruffledCharacters;
-    }
-
-    private String getRandomCharacterFrom(Map<String, Integer> remainingCharacters) {
-        final Random random = new Random();
-        int randomCharacterIndex = random.nextInt(remainingCharacters.size());
-
-        final ArrayList<Map.Entry<String, Integer>> listOfEntries = new ArrayList<>(remainingCharacters.entrySet());
-        final Map.Entry<String, Integer> entry = listOfEntries.get(randomCharacterIndex);
-
-        return entry.getKey();
     }
 
     public ArrayList<String> remainingCharactersAsList() {

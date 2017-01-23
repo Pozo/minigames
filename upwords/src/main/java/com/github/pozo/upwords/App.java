@@ -30,25 +30,27 @@ public class App {
             @Override
             public void firstPlayerTurn(Player player) {
                 try {
+                    LOGGER.info("App.firstPlayerTurn: " + player.getName());
                     String character = player.getCharacters().get(0);
                     Step step = new Step(new Coordinate(1, 1), character);
                     player.put(step);
                 } catch (IllegalCoordinateException e) {
                     LOGGER.info(e.getMessage());
                 }
-                LOGGER.info("App.firstPlayerTurn: " + player.getName());
+
             }
 
             @Override
             public void secondPlayerTurn(Player player) {
                 try {
+                    LOGGER.info("App.secondPlayerTurn: " + player.getName());
                     String character = player.getCharacters().get(0);
                     Step step = new Step(new Coordinate(1, 1), character);
                     player.put(step);
                 } catch (IllegalCoordinateException e) {
                     LOGGER.info(e.getMessage());
                 }
-                LOGGER.info("App.secondPlayerTurn: " + player.getName());
+
             }
 
             @Override
