@@ -8,6 +8,8 @@ import com.github.pozo.upwords.PlayerListener;
 import com.github.pozo.upwords.Step;
 import com.github.pozo.upwords.board.UpWordsBoard;
 import com.github.pozo.upwords.player.DefaultPlayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +19,8 @@ import java.util.Random;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class UpWord implements PlayerListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpWord.class);
+
     private final Map<Player, List<String>> gameState;
 
     private final Player playerOne;
@@ -74,7 +78,7 @@ public class UpWord implements PlayerListener {
         playerOne.gameStarted(new ArrayList<>(initialCharactersOne), 10, 10);
         playerTwo.gameStarted(new ArrayList<>(initialCharactersTwo), 10, 10);
 
-        System.out.println("first player is " + firstPlayer);
+        LOGGER.info("first player is " + firstPlayer);
 
         for (GameEventListener gameEventListener : gameEventListeners) {
             gameEventListener.gameStarted(firstPlayer);

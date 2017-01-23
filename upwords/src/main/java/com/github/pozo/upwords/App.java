@@ -2,8 +2,12 @@ package com.github.pozo.upwords;
 
 import com.github.pozo.upwords.game.UpWord;
 import com.github.pozo.upwords.player.DefaultPlayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class App {
+    private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+
     public static void main(String[] args) throws IllegalCoordinateException, InterruptedException {
         final DefaultPlayer playerOne = new DefaultPlayer("Bela");
         final DefaultPlayer playerTwo = new DefaultPlayer("Otto");
@@ -13,7 +17,7 @@ public class App {
         upWord.addGameEventListener(new GameEventListener() {
             @Override
             public void gameStarted(final Player firstPlayer) {
-                System.out.println("App.gameStarted: " + firstPlayer.getName());
+                LOGGER.info("App.gameStarted: " + firstPlayer.getName());
                 try {
                     String character = firstPlayer.getCharacters().get(0);
                     Step step = new Step(new Coordinate(0, 0), character);
@@ -30,9 +34,9 @@ public class App {
                     Step step = new Step(new Coordinate(1, 1), character);
                     player.put(step);
                 } catch (IllegalCoordinateException e) {
-                    System.out.println(e.getMessage());
+                    LOGGER.info(e.getMessage());
                 }
-                System.out.println("App.firstPlayerTurn: " + player.getName());
+                LOGGER.info("App.firstPlayerTurn: " + player.getName());
             }
 
             @Override
@@ -42,14 +46,14 @@ public class App {
                     Step step = new Step(new Coordinate(1, 1), character);
                     player.put(step);
                 } catch (IllegalCoordinateException e) {
-                    System.out.println(e.getMessage());
+                    LOGGER.info(e.getMessage());
                 }
-                System.out.println("App.secondPlayerTurn: " + player.getName());
+                LOGGER.info("App.secondPlayerTurn: " + player.getName());
             }
 
             @Override
             public void gameEnded() {
-                System.out.println("App.gameEnded");
+                LOGGER.info("App.gameEnded");
             }
         });
         upWord.start();
