@@ -7,7 +7,6 @@ import com.github.pozo.upwords.Player;
 import com.github.pozo.upwords.PlayerListener;
 import com.github.pozo.upwords.Step;
 import com.github.pozo.upwords.board.UpWordsBoard;
-import com.github.pozo.upwords.player.DefaultPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class UpWord implements PlayerListener {
@@ -26,8 +24,10 @@ public class UpWord implements PlayerListener {
     private final Player playerOne;
     private final Player playerTwo;
 
-    private final Board upwordBoard;
+    private final Board gameBoard;
     private final CharacterMixer characterMixer;
+    private PlayerRaffler playerRaffler;
+
     private final GameEventProducer gameEventProducer;
 
     private Player firstPlayer;
@@ -38,25 +38,31 @@ public class UpWord implements PlayerListener {
     private boolean hasWinner;
     private LinkedBlockingDeque<GameEventListener> gameEventListeners;
 
-    public UpWord(DefaultPlayer playerOne, DefaultPlayer playerTwo) {
-        checkParams(playerOne, playerTwo);
-        upwordBoard = new UpWordsBoard();
-        characterMixer = new CharacterMixer();
-        gameState = new HashMap<>();
+    public UpWord(Player playerOne, Player playerTwo) {
+        this(playerOne, playerTwo, new PlayerRaffler(playerOne, playerTwo));
+    }
 
-        previousSteps = new ArrayList<>();
-        gameEventListeners = new LinkedBlockingDeque<>();
+    UpWord(Player playerOne, Player playerTwo, PlayerRaffler playerRaffler) {
+        checkParams(playerOne, playerTwo);
+        this.gameState = new HashMap<>();
+
+        this.gameBoard = new UpWordsBoard();
+        this.characterMixer = new CharacterMixer();
+        this.playerRaffler = playerRaffler;
+
+        this.previousSteps = new ArrayList<>();
+        this.gameEventListeners = new LinkedBlockingDeque<>();
 
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
 
-        gameEventProducer = new GameEventProducer(upwordBoard, playerOne, playerTwo);
+        this.gameEventProducer = new GameEventProducer(gameBoard, playerOne, playerTwo);
 
         playerOne.addPlayerListener(this);
         playerTwo.addPlayerListener(this);
     }
 
-    private void checkParams(DefaultPlayer playerOne, DefaultPlayer playerTwo) {
+    private void checkParams(Player playerOne, Player playerTwo) {
         if (playerOne == null) {
             throw new NullPointerException("playerOne cant be null");
         }
@@ -66,7 +72,7 @@ public class UpWord implements PlayerListener {
     }
 
     public void start() {
-        firstPlayer = raffleFirstPlayer();
+        firstPlayer = playerRaffler.raffleFirstPlayer();
         currentPlayer = firstPlayer;
 
         List<String> initialCharactersOne = characterMixer.raffleCharacters();
@@ -89,11 +95,15 @@ public class UpWord implements PlayerListener {
         return hasWinner;
     }
 
-    public Player getCurrentPlayer() {
+    Player getCurrentPlayer() {
         return this.currentPlayer;
     }
 
-    public void iterate() {
+    Player getPreviousPlayer() {
+        return this.previousPlayer;
+    }
+
+    public void nextTurn() {
         finishTurn(this.currentPlayer);
 
         setupPreviousPlayer();
@@ -111,10 +121,10 @@ public class UpWord implements PlayerListener {
                 this.currentPlayer = playerOne;
             }
 
-        } else if (previousPlayer.equals(playerOne)) {
+        } else if (currentPlayer.equals(playerOne)) {
             this.currentPlayer = playerTwo;
 
-        } else if (previousPlayer.equals(playerTwo)) {
+        } else if (currentPlayer.equals(playerTwo)) {
             this.currentPlayer = playerOne;
 
         }
@@ -122,17 +132,6 @@ public class UpWord implements PlayerListener {
 
     private void setupPreviousPlayer() {
         this.previousPlayer = currentPlayer;
-    }
-
-    private Player raffleFirstPlayer() {
-        Random rand = new Random();
-
-        int randomInt = rand.nextInt(100) + 1;
-        if (randomInt % 2 == 0) {
-            return playerOne;
-        } else {
-            return playerTwo;
-        }
     }
 
     @Override
@@ -148,7 +147,7 @@ public class UpWord implements PlayerListener {
 
         if (currentPlayerCharacters.contains(character)) {
             LOGGER.info(player.getName() + " puts " + character + " to " + step);
-            upwordBoard.put(step);
+            gameBoard.put(step);
             previousSteps.add(step);
             currentPlayerCharacters.remove(character);
         } else {
@@ -157,9 +156,8 @@ public class UpWord implements PlayerListener {
     }
 
     @Override
-    public void pass(Player playerWhoGaveUp) {
-        gameEventProducer.fireGameEndEventWithAbandon(playerWhoGaveUp);
-        hasWinner = true;
+    public void pass(Player player) {
+        LOGGER.info(player.getName() + " passed");
     }
 
     @Override

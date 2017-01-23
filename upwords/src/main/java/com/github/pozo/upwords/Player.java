@@ -7,9 +7,13 @@ public interface Player extends GameListener {
 
     void put(Step step) throws IllegalCoordinateException;
 
+    void pass();
+
     void replace(String character);
 
     void finishTurn();
 
     List<String> getCharacters();
+
+    void addPlayerListener(PlayerListener playerListener);
 }

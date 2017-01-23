@@ -43,6 +43,11 @@ public class DefaultPlayer implements Player {
     }
 
     @Override
+    public void pass() {
+        playerListener.pass(this);
+    }
+
+    @Override
     public void replace(String character) {
         if (yourCharacters.contains(character)) {
             playerListener.replace(this, character);
@@ -119,5 +124,20 @@ public class DefaultPlayer implements Player {
                 "name='" + name + '\'' +
                 ", yourCharacters=" + yourCharacters +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DefaultPlayer that = (DefaultPlayer) o;
+
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

@@ -36,6 +36,7 @@ public class App {
                     player.put(step);
                 } catch (IllegalCoordinateException e) {
                     LOGGER.info(e.getMessage());
+                    player.pass();
                 }
 
             }
@@ -62,7 +63,7 @@ public class App {
 
         while (!upWord.hasWinner()) {
             Thread.sleep(1000);
-            upWord.iterate();
+            upWord.nextTurn();
         }
     }
 }

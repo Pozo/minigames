@@ -1,24 +1,19 @@
 package com.github.pozo.upwords.game;
 
 import com.github.pozo.upwords.Board;
-import com.github.pozo.upwords.Coordinate;
 import com.github.pozo.upwords.Player;
-import com.github.pozo.upwords.Step;
-import com.github.pozo.upwords.player.DefaultPlayer;
-
-import java.util.ArrayList;
-import java.util.List;
 
 class GameEventProducer {
     private Board gameTicTacToeBoard;
-    private final DefaultPlayer playerOne;
-    private final DefaultPlayer playerTwo;
+    private final Player playerOne;
+    private final Player playerTwo;
 
-    GameEventProducer(Board gameTicTacToeBoard, DefaultPlayer playerOne, DefaultPlayer playerTwo) {
+    GameEventProducer(Board gameTicTacToeBoard, Player playerOne, Player playerTwo) {
         this.gameTicTacToeBoard = gameTicTacToeBoard;
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
     }
+
     void fireGameEndEvent(Player winner) {
         if (winner.equals(playerOne)) {
             playerOne.youWin();
