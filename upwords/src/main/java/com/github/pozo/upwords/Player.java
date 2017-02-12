@@ -1,5 +1,7 @@
 package com.github.pozo.upwords;
 
+import com.github.pozo.upwords.event.player.GameListener;
+
 import java.util.List;
 
 public interface Player extends GameListener {

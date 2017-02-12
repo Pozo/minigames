@@ -1,12 +1,18 @@
 package com.github.pozo.upwords.game;
 
 import com.github.pozo.upwords.Board;
-import com.github.pozo.upwords.GameEventListener;
 import com.github.pozo.upwords.IllegalCoordinateException;
 import com.github.pozo.upwords.Player;
 import com.github.pozo.upwords.PlayerListener;
 import com.github.pozo.upwords.Step;
 import com.github.pozo.upwords.board.UpWordsBoard;
+import com.github.pozo.upwords.event.game.end.GameEndedEventListener;
+import com.github.pozo.upwords.event.game.firstturn.FirstPlayerTurnEvent;
+import com.github.pozo.upwords.event.game.firstturn.FirstTurnEventEventListener;
+import com.github.pozo.upwords.event.game.secondturn.SecondPlayerTurnEvent;
+import com.github.pozo.upwords.event.game.secondturn.SecondTurnEventEventListener;
+import com.github.pozo.upwords.event.game.start.GameStartedEvent;
+import com.github.pozo.upwords.event.game.start.GameStartedEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +42,11 @@ public class UpWord implements PlayerListener {
     private List<Step> previousSteps;
 
     private boolean hasWinner;
-    private LinkedBlockingDeque<GameEventListener> gameEventListeners;
+
+    private LinkedBlockingDeque<GameStartedEventListener> gameStartedEventListeners;
+    private LinkedBlockingDeque<GameEndedEventListener> gameEndedEventListeners;
+    private LinkedBlockingDeque<FirstTurnEventEventListener> firstPlayerTurnEventListeners;
+    private LinkedBlockingDeque<SecondTurnEventEventListener> secondPlayerTurnEventListeners;
 
     public UpWord(Player playerOne, Player playerTwo) {
         this(playerOne, playerTwo, new PlayerRaffler(playerOne, playerTwo));
@@ -51,7 +61,11 @@ public class UpWord implements PlayerListener {
         this.playerRaffler = playerRaffler;
 
         this.previousSteps = new ArrayList<>();
-        this.gameEventListeners = new LinkedBlockingDeque<>();
+
+        this.gameStartedEventListeners = new LinkedBlockingDeque<>();
+        this.gameEndedEventListeners = new LinkedBlockingDeque<>();
+        this.firstPlayerTurnEventListeners = new LinkedBlockingDeque<>();
+        this.secondPlayerTurnEventListeners = new LinkedBlockingDeque<>();
 
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
@@ -86,8 +100,8 @@ public class UpWord implements PlayerListener {
 
         LOGGER.info("first player is " + firstPlayer);
 
-        for (GameEventListener gameEventListener : gameEventListeners) {
-            gameEventListener.gameStarted(firstPlayer);
+        for (GameStartedEventListener gameEventListener : gameStartedEventListeners) {
+            gameEventListener.gameStarted(new GameStartedEvent(firstPlayer));
         }
     }
 
@@ -175,32 +189,50 @@ public class UpWord implements PlayerListener {
 
     @Override
     public void finishTurn(Player player) {
-        for (GameEventListener gameEventListener : gameEventListeners) {
-            if (player.equals(playerTwo)) {
-                if (player.equals(firstPlayer)) {
-                    // player is playerTwo and he is the FIRST player
-                    gameEventListener.secondPlayerTurn(playerOne);
-                } else {
-                    // player is playerTwo and he is the SECOND player
-                    gameEventListener.firstPlayerTurn(playerOne);
-                }
+        if (player.equals(playerTwo)) {
+            if (player.equals(firstPlayer)) {
+                // player is playerTwo and he is the FIRST player
+                secondPlayerTurn(playerOne);
             } else {
-                if (player.equals(firstPlayer)) {
-                    // player is playerOne and he is the FIRST player
-                    gameEventListener.secondPlayerTurn(playerTwo);
-                } else {
-                    // player is playerOne and he is the SECOND player
-                    gameEventListener.firstPlayerTurn(playerTwo);
-                }
+                // player is playerTwo and he is the SECOND player
+                firstPlayerTurn(playerOne);
+            }
+        } else {
+            if (player.equals(firstPlayer)) {
+                // player is playerOne and he is the FIRST player
+                secondPlayerTurn(playerTwo);
+            } else {
+                // player is playerOne and he is the SECOND player
+                firstPlayerTurn(playerTwo);
             }
         }
     }
 
-    public void addGameEventListener(GameEventListener gameEventListener) {
-        this.gameEventListeners.add(gameEventListener);
+    private void firstPlayerTurn(Player player2) {
+        for (FirstTurnEventEventListener firstPlayerTurnEventListener : firstPlayerTurnEventListeners) {
+            firstPlayerTurnEventListener.firstPlayerTurn(new FirstPlayerTurnEvent(player2));
+        }
     }
 
-    public void removeGameEventListener(GameEventListener gameEventListener) {
-        this.gameEventListeners.remove(gameEventListener);
+    private void secondPlayerTurn(Player player2) {
+        for (SecondTurnEventEventListener secondPlayerTurnEventListener : secondPlayerTurnEventListeners) {
+            secondPlayerTurnEventListener.secondPlayerTurn(new SecondPlayerTurnEvent(player2));
+        }
+    }
+
+    public void addFirstPlayerTurnEventListener(FirstTurnEventEventListener firstTurnEventEventListener) {
+        firstPlayerTurnEventListeners.add(firstTurnEventEventListener);
+    }
+
+    public void addSecondPlayerTurnEventListener(SecondTurnEventEventListener secondTurnEventEventListener) {
+        secondPlayerTurnEventListeners.add(secondTurnEventEventListener);
+    }
+
+    public void addGameEndedEventListener(GameEndedEventListener gameEndedEventListener) {
+        gameEndedEventListeners.add(gameEndedEventListener);
+    }
+
+    public void addGameStartedEventListener(GameStartedEventListener gameStartedEventListener) {
+        gameStartedEventListeners.add(gameStartedEventListener);
     }
 }
